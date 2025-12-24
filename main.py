@@ -20,7 +20,7 @@ async def main():
     for slide in slide_json.get("slides", []):
         if "image_prompt" not in slide or "http" not in slide["image_prompt"]:
              # Simple placeholder logic
-            slide["image_prompt"] = "https://placehold.co/1920x1080/282c34/white?text=AI+Selected+Image"
+            slide["image_prompt"] = "assets/car.jpg"
 
     # 4. Generate PDF
     await render_pdf(slide_json, output_filename="Travel_Itinerary_AI.pdf")

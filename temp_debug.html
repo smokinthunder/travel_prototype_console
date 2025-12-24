@@ -213,70 +213,151 @@
 </head>
 
 <body>
-  {% for slide in slides %}
+  
 
-  <div class="slide layout-{{ slide.layout }}" style="--bg-image: url('{{ slide.image_prompt }}');">
-    {% if slide.layout == 'timeline_view' %}
+  <div class="slide layout-title_hero" style="--bg-image: url('assets/car.jpg');">
+    
+    <h1>Amalfi Coast Luxury Escape</h1>
+    <p>The Anderson Family</p>
+
+    
+  </div>
+  
+
+  <div class="slide layout-timeline_view" style="--bg-image: url('assets/car.jpg');">
+    
     <div class="slide layout-timeline_view">
-        <h2 style="color:white; font-size:3rem;">{{ slide.title }}</h2>
+        <h2 style="color:white; font-size:3rem;">Your Journey at a Glance</h2>
         <div class="timeline-container">
-            {% for item in slide.timeline_items %}
+            
             <div class="timeline-item">
-                <div class="t-day">{{ item.day }}</div>
-                <h3 class="t-title">{{ item.title }}</h3>
+                <div class="t-day">Day 1</div>
+                <h3 class="t-title">Arrival in Positano</h3>
             </div>
-            {% endfor %}
+            
+            <div class="timeline-item">
+                <div class="t-day">Day 2</div>
+                <h3 class="t-title">Capri by Boat</h3>
+            </div>
+            
         </div>
     </div>
 
-    {% elif slide.layout == 'day_intro' %}
-    <div class="slide layout-day_intro" style="--bg-image: url('{{ slide.image_prompt }}');">
-        <div class="big-day-label">{{ slide.day_label }}</div>
-        <h2 class="intro-title">{{ slide.title }}</h2>
+    
+  </div>
+  
+
+  <div class="slide layout-day_intro" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-day_intro" style="--bg-image: url('assets/car.jpg');">
+        <div class="big-day-label">Day 1</div>
+        <h2 class="intro-title">The Amalfi Arrival</h2>
     </div>
 
-    {% elif slide.layout == 'hotel_focus' or slide.layout == 'activity_focus' %}
-    <div class="slide layout-hotel_focus" style="--bg-image: url('{{ slide.image_prompt }}');">
+    
+  </div>
+  
+
+  <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
         <div class="focus-image"></div>
         <div class="focus-content">
             <div class="focus-label">
-                {% if slide.layout == 'hotel_focus' %} Accommodation {% else %} Experience {% endif %}
+                 Accommodation 
             </div>
-            <h2 style="font-size: 2.5rem; color: #0f172a; margin: 0 0 20px 0;">{{ slide.title }}</h2>
-            <p style="color: #475569;">{{ slide.body }}</p>
+            <h2 style="font-size: 2.5rem; color: #0f172a; margin: 0 0 20px 0;">Le Sirenuse</h2>
+            <p style="color: #475569;">A legendary hotel with an infinity pool overlooking the bay. Enjoy Michelin dining and world-class service.</p>
             
-            {% if slide.tags %}
+            
             <div class="focus-tags" style="margin-top: 30px;">
-                {% for tag in slide.tags %}
-                <span>{{ tag }}</span>
-                {% endfor %}
+                
+                <span>5-Star</span>
+                
+                <span>Sea View</span>
+                
             </div>
-            {% endif %}
+            
         </div>
     </div>
 
-    {% elif slide.layout == 'title_hero' %}
-    <h1>{{ slide.title }}</h1>
-    <p>{{ slide.subtitle }}</p>
-
-    {% elif slide.layout == 'split_right' %}
-    <div class="text-panel">
-      <h2>{{ slide.title }}</h2>
-      <p>{{ slide.body }}</p>
-
-      {% if slide.details %}
-      <div style="margin-top: 30px">
-        {% for detail in slide.details %}
-        <span class="pill">{{ detail }}</span>
-        {% endfor %}
-      </div>
-      {% endif %}
-    </div>
-    <div class="image-panel"></div>
-
-    {% endif %}
+    
   </div>
-  {% endfor %}
+  
+
+  <div class="slide layout-activity_focus" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
+        <div class="focus-image"></div>
+        <div class="focus-content">
+            <div class="focus-label">
+                 Experience 
+            </div>
+            <h2 style="font-size: 2.5rem; color: #0f172a; margin: 0 0 20px 0;">Arrival in Style</h2>
+            <p style="color: #475569;">Travel in luxury with a private Mercedes S-Class transfer from Naples Airport to your hotel.</p>
+            
+            
+        </div>
+    </div>
+
+    
+  </div>
+  
+
+  <div class="slide layout-day_intro" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-day_intro" style="--bg-image: url('assets/car.jpg');">
+        <div class="big-day-label">Day 2</div>
+        <h2 class="intro-title">Capri by Boat</h2>
+    </div>
+
+    
+  </div>
+  
+
+  <div class="slide layout-activity_focus" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
+        <div class="focus-image"></div>
+        <div class="focus-content">
+            <div class="focus-label">
+                 Experience 
+            </div>
+            <h2 style="font-size: 2.5rem; color: #0f172a; margin: 0 0 20px 0;">Private Boat Tour to Capri</h2>
+            <p style="color: #475569;">Experience a 6-hour private boat tour, including a magical swim at the Blue Grotto.</p>
+            
+            
+        </div>
+    </div>
+
+    
+  </div>
+  
+
+  <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
+    
+    <div class="slide layout-hotel_focus" style="--bg-image: url('assets/car.jpg');">
+        <div class="focus-image"></div>
+        <div class="focus-content">
+            <div class="focus-label">
+                 Accommodation 
+            </div>
+            <h2 style="font-size: 2.5rem; color: #0f172a; margin: 0 0 20px 0;">Le Sirenuse</h2>
+            <p style="color: #475569;">Continue your stay in the heart of Positano with breathtaking views and outstanding hospitality.</p>
+            
+            
+            <div class="focus-tags" style="margin-top: 30px;">
+                
+                <span>Luxury Retreat</span>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    
+  </div>
+  
 </body>
 
 </html>

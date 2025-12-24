@@ -5,57 +5,112 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# MOCK MODE: Set to True if you don't have an API key right now
-MOCK_MODE = False 
+# CHECK 1: Ensure API Key is loaded
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    print("❌ ERROR: OPENAI_API_KEY not found in .env file.")
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=api_key)
+
+# CHECK 2: Use the correct model name. 
+# If 'gpt-5.2' throws an error, switch back to 'gpt-4o' or 'gpt-4-turbo'
+MODEL_NAME = "gpt-4o" 
 
 SYSTEM_PROMPT = """
-You are an expert Travel Designer and UI Architect. 
-Your goal is to convert raw itinerary data into a JSON structure for a visual slide deck (Gamma-style).
+You are a High-End Travel Director. Create a cinematic, slide-by-slide visual journey.
 
-RULES:
-1. Tone: Match the 'vibe' provided in metadata.
-2. Structure: Break the output into a list of 'slides'.
-3. Layouts: Assign a 'layout_type' to each slide. Options: ['title_hero', 'split_left', 'split_right', 'grid_gallery'].
-4. Images: Since we don't have real images, output strict PLACEHOLDER descriptions in 'image_prompt'.
-5. Content: Write compelling marketing copy. Do not make up facts, but polish the descriptions.
+YOUR TASK:
+Convert the raw itinerary into a JSON list of slides. 
+Break down each day into multiple focused slides to keep it "skimmable" and visual.
+
+REQUIRED SLIDE FLOW:
+1. **Title Slide**: Trip Name & Client Name.
+2. **Timeline Slide**: A visual summary of the whole trip (List of Day Titles).
+3. **Day Loops**: For each day, generate:
+    a. "Day Intro" Slide: A short, punchy summary of what happens that day.
+    b. "Feature" Slides: Separate slides for key Hotels or Major Activities. 
+       (e.g., Don't just list the hotel in the text; give the Hotel its own slide with a 'hotel_focus' layout).
+
+LAYOUT TYPES TO USE:
+- 'title_hero' (For the Trip Title)
+- 'timeline_view' (For the trip overview)
+- 'day_intro' (Minimal text, big number "Day 1")
+- 'hotel_focus' (Dedicated to accommodation, emphasize luxury)
+- 'activity_focus' (Dedicated to an experience, emphasize emotion)
+
+JSON STRUCTURE:
+{
+  "slides": [
+    {
+      "layout": "timeline_view",
+      "title": "Your Journey at a Glance",
+      "timeline_items": [
+         {"day": "Day 1", "title": "Arrival in Positano"},
+         {"day": "Day 2", "title": "Capri by Boat"}
+      ]
+    },
+    {
+      "layout": "day_intro",
+      "day_label": "Day 1",
+      "title": "The Amalfi Arrival",
+      "image_prompt": "Sunset over Positano"
+    },
+    {
+      "layout": "hotel_focus",
+      "title": "Le Sirenuse",
+      "tags": ["5-Star", "Sea View"],
+      "body": "A legendary hotel with an infinity pool overlooking the bay.",
+      "image_prompt": "Le Sirenuse pool"
+    }
+  ]
+}
 """
 
 def generate_presentation_json(raw_data):
-    if MOCK_MODE:
-        print("⚠️  Running in MOCK MODE (No API Call)")
-        return mock_response()
-
-    print("🧠 Sending data to AI Model...")
+    print(f"🧠 Sending data to AI Model ({MODEL_NAME})...")
     
-    response = client.chat.completions.create(
-        model="gpt-4o",  # Use your GPT-5.1 access here
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Convert this raw trip data into a Presentation JSON:\n{json.dumps(raw_data)}"}
-        ]
-    )
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": f"Create slides for this trip data:\n{json.dumps(raw_data)}"}
+            ]
+        )
+        
+        content = response.choices[0].message.content
+        
+        # DEBUG: Print what the AI actually sent back
+        print("\n--- RAW AI RESPONSE ---")
+        print(content)
+        print("-----------------------\n")
 
-    return json.loads(response.choices[0].message.content)
+        parsed_json = json.loads(content)
+        
+        # SAFETY FIX: Ensure 'slides' key exists
+        if "slides" not in parsed_json:
+            print("⚠️ JSON format warning: Root key 'slides' missing. Attempting auto-fix.")
+            # If AI returned a list directly, wrap it
+            if isinstance(parsed_json, list):
+                parsed_json = {"slides": parsed_json}
+            # If AI returned a different key (like 'presentation'), use that
+            elif len(parsed_json.keys()) == 1:
+                key = list(parsed_json.keys())[0]
+                parsed_json = {"slides": parsed_json[key]}
+            
+        return parsed_json
 
-def mock_response():
-    # Fallback if no API key
-    return {
-        "slides": [
-            {
-                "layout": "title_hero",
-                "title": "Escape to the Amalfi Coast",
-                "subtitle": "A Curated Journey for The Anderson Family",
-                "image_prompt": "https://placehold.co/1920x1080/1e293b/FFF?text=Amalfi+Coast"
-            },
-            {
-                "layout": "split_right",
-                "title": "Day 1: Arrival in Positano",
-                "body": "Welcome to paradise. Your private chauffeur awaits at Naples Airport to whisk you away to Le Sirenuse.",
-                "details": ["Stay: Le Sirenuse (5-Star)", " amenity: Infinity Pool"],
-                "image_prompt": "https://placehold.co/1080x1920/e2e8f0/1e293b?text=Le+Sirenuse"
-            }
-        ]
-    }
+    except Exception as e:
+        print(f"❌ AI Generation Error: {e}")
+        # Return a fallback slide so the PDF isn't empty
+        return {
+            "slides": [
+                {
+                    "layout": "title_hero",
+                    "title": "Error Generating Content",
+                    "subtitle": str(e),
+                    "image_prompt": ""
+                }
+            ]
+        }
